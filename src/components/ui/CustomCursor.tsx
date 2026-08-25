@@ -1,63 +1,46 @@
 import React, { useEffect, useRef } from 'react';
 
-const CustomCursor: React.FC = () => {
-  const dotRef = useRef<HTMLDivElement>(null);
-  const ringRef = useRef<HTMLDivElement>(null);
-  
-  // Position refs for lerping
-  const mousePos = useRef({ x: 0, y: 0 });
-  const ringPos = useRef({ x: 0, y: 0 });
+const CustomCursor = () => {
+  const cursorRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      mousePos.current = { x: e.clientX, y: e.clientY };
-      
-      // Update dot immediately
-      if (dotRef.current) {
-        dotRef.current.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+    const moveCursor = (e: MouseEvent) => {
+      if (cursorRef.current) {
+        cursorRef.current.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
       }
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
-    
-    let animationFrameId: number;
-    
-    // Animate ring with lerp
-    const render = () => {
-      // Linear interpolation for smooth trailing effect
-      ringPos.current.x += (mousePos.current.x - ringPos.current.x) * 0.15;
-      ringPos.current.y += (mousePos.current.y - ringPos.current.y) * 0.15;
-      
-      if (ringRef.current) {
-        ringRef.current.style.transform = `translate(${ringPos.current.x}px, ${ringPos.current.y}px)`;
-      }
-      
-      animationFrameId = requestAnimationFrame(render);
-    };
-    
-    animationFrameId = requestAnimationFrame(render);
-
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      cancelAnimationFrame(animationFrameId);
-    };
+    window.addEventListener('mousemove', moveCursor);
+    return () => window.removeEventListener('mousemove', moveCursor);
   }, []);
 
   return (
     <>
-      {/* Small dot */}
+      <style>{`
+        body, button, a, div { cursor: none !important; }
+      `}</style>
+
       <div 
-        ref={dotRef}
-        className="fixed top-0 left-0 w-3 h-3 bg-indigo-600 rounded-full pointer-events-none z-[10000] -ml-1.5 -mt-1.5 hidden md:block"
-        style={{ willChange: 'transform' }}
-      />
-      
-      {/* Trailing ring */}
-      <div 
-        ref={ringRef}
-        className="fixed top-0 left-0 w-8 h-8 border-2 border-indigo-400 rounded-full pointer-events-none z-[9999] -ml-4 -mt-4 hidden md:block opacity-50"
-        style={{ willChange: 'transform' }}
-      />
+        ref={cursorRef}
+        className="fixed top-0 left-0 pointer-events-none z-[9999]"
+        style={{ marginLeft: '-2px', marginTop: '-2px' }} 
+      >
+        <svg 
+          width="32" 
+          height="32" 
+          viewBox="0 0 24 24" 
+          fill="none" 
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path 
+            d="M5.5 2L18 13.5L11.5 13.5L15 21L12 22L8.5 14.5L2.5 19.5L5.5 2Z" 
+            fill="#FF9FAC"   
+            stroke="black"   
+            strokeWidth="2"  
+            strokeLinejoin="round"
+          />
+        </svg>
+      </div>
     </>
   );
 };

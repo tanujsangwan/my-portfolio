@@ -1,68 +1,58 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 
-const skillsData = [
-  {
-    category: "Languages",
-    items: ["Python", "Java", "JavaScript", "SQL", "HTML/CSS"]
-  },
-  {
-    category: "Frameworks & APIs",
-    items: ["React", "FastAPI", "REST APIs", "Framer Motion"]
-  },
-  {
-    category: "AI/ML & Data",
-    items: ["TensorFlow", "Keras", "Scikit-learn", "Pandas", "NumPy", "Matplotlib"]
-  },
-  {
-    category: "Databases & Tools",
-    items: ["MySQL", "Git", "GitHub", "VS Code", "Jupyter", "Google Colab"]
-  },
-  {
-    category: "Core Concepts",
-    items: ["DSA", "OOP", "DBMS"]
-  }
-];
+const SkillCategory = ({ title, skills, color }: { title: string, skills: string[], color: string }) => (
+  <div className={`bg-white border-4 border-black p-5 rounded-2xl shadow-neo hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all relative overflow-hidden`}>
+    <h3 className={`font-shrikhand text-xl mb-3 ${color} inline-block px-2 border-2 border-black rounded-md `}>
+        {title}
+    </h3>
+    <div className="flex flex-wrap gap-2">
+      {skills.map((skill) => (
+        <span key={skill} className="bg-gray-100 px-3 py-1 rounded-full border-2 border-black text-sm font-bold hover:bg-custom-green">
+          {skill}
+        </span>
+      ))}
+    </div>
+  </div>
+);
 
-const Skills: React.FC = () => {
+const Skills = () => {
   return (
-    <section id="skills" className="py-20 bg-slate-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div 
-          className="text-center mb-16"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-        >
-          <h2 className="text-3xl font-bold text-slate-800">Technical Skills</h2>
-          <div className="mt-2 h-1 w-20 bg-indigo-500 mx-auto rounded-full"></div>
-        </motion.div>
+    <section id="skills" className="py-10 px-4 max-w-7xl mx-auto bg-custom-pink border-2 border-b-4 border-r-4 border-black rounded-3xl shadow-neo">
+      <div className="bg-custom-yellow text-black px-8 py-3 rounded-full border-4 border-black w-fit mx-auto mb-10 shadow-neo ">
+        <h2 className="text-3xl font-shrikhand">SKILLS</h2>
+      </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {skillsData.map((skillGroup, index) => (
-            <motion.div
-              key={skillGroup.category}
-              className="bg-white rounded-2xl p-6 shadow-[0_2px_16px_rgba(0,0,0,0.04)] border border-slate-100 hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] transition-shadow duration-300"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-            >
-              <h3 className="text-lg font-semibold text-indigo-600 mb-4">{skillGroup.category}</h3>
-              <div className="flex flex-wrap gap-2">
-                {skillGroup.items.map((item) => (
-                  <span 
-                    key={item} 
-                    className="px-3 py-1.5 bg-indigo-50 text-indigo-700 text-sm font-medium rounded-full"
-                  >
-                    {item}
-                  </span>
-                ))}
-              </div>
-            </motion.div>
-          ))}
-        </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <SkillCategory 
+            title="Languages" 
+            color="bg-custom-pink"
+            skills={['Java', 'Python', 'JavaScript', 'SQL', 'HTML/CSS']} 
+        />
+        <SkillCategory 
+            title="Frameworks" 
+            color="bg-custom-blue"
+            skills={['React', 'FastAPI', 'REST APIs', 'Framer Motion']} 
+        />
+        <SkillCategory 
+            title="AI/ML & Data" 
+            color="bg-purple-300"
+            skills={['TensorFlow', 'Keras', 'Scikit-learn', 'Pandas', 'NumPy', 'Matplotlib']} 
+        />
+        <SkillCategory 
+            title="Databases" 
+            color="bg-custom-yellow"
+            skills={['MySQL', 'MongoDB']} 
+        />
+        <SkillCategory 
+            title="Tools" 
+            color="bg-custom-red"
+            skills={['Git', 'GitHub', 'VS Code', 'Jupyter Notebook', 'Google Colab']} 
+        />
+        <SkillCategory 
+            title="Core Concepts" 
+            color="bg-custom-green"
+            skills={['Data Structures', 'Algorithms', 'OOP', 'DBMS']} 
+        />
       </div>
     </section>
   );

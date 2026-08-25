@@ -1,64 +1,107 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 
-const Preloader: React.FC = () => {
+const Preloader = () => {
   const [progress, setProgress] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isJerking, setIsJerking] = useState(false); 
+  const [isLoaded, setIsLoaded] = useState(false);   
+  const [shouldRender, setShouldRender] = useState(true);
 
   useEffect(() => {
-    // Prevent scrolling while loading
     document.body.style.overflow = 'hidden';
-
-    const duration = 2000;
-    const interval = 20;
-    const step = 100 / (duration / interval);
 
     const timer = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 100) {
           clearInterval(timer);
-          setTimeout(() => {
-            setIsLoading(false);
-            document.body.style.overflow = 'unset';
-          }, 300);
           return 100;
         }
-        return prev + step;
+        const diff = Math.random() * 10; 
+        const next = prev + diff;
+        return next >= 100 ? 100 : next;
       });
-    }, interval);
+    }, 100);
+
+    const safetyTimeout = setTimeout(() => {
+      setProgress(100);
+    }, 2500);
 
     return () => {
       clearInterval(timer);
-      document.body.style.overflow = 'unset';
+      clearTimeout(safetyTimeout);
     };
   }, []);
 
+  useEffect(() => {
+    if (progress === 100) {
+      setTimeout(() => {
+        setIsJerking(true);
+      }, 400);
+
+      setTimeout(() => {
+        setIsLoaded(true);
+        document.body.style.overflow = 'unset';
+      }, 800); 
+
+      setTimeout(() => {
+        setShouldRender(false);
+      }, 2000);
+    }
+  }, [progress]);
+
+  if (!shouldRender) return null;
+
   return (
-    <AnimatePresence>
-      {isLoading && (
-        <motion.div
-          initial={{ y: 0 }}
-          exit={{ y: '-100%' }}
-          transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }}
-          className="fixed inset-0 z-[9999] bg-white flex flex-col items-center justify-center"
-        >
-          <div className="text-center w-full max-w-sm px-8">
-            <h1 className="text-4xl font-bold text-indigo-600 mb-8 tracking-tighter">TANUJ.</h1>
-            
-            <div className="h-1 w-full bg-slate-100 rounded-full overflow-hidden mb-4 relative">
-              <div 
-                className="absolute top-0 left-0 h-full bg-indigo-600 transition-all duration-75 ease-out rounded-full"
-                style={{ width: `${progress}%` }}
-              />
-            </div>
-            
-            <div className="flex justify-end w-full">
-              <span className="text-slate-400 font-mono text-sm">{Math.round(progress)}%</span>
-            </div>
+    <div 
+      className={`fixed inset-0 z-[99999] flex flex-col items-center justify-center cursor-none
+        transition-transform ease-in-out
+        ${isLoaded 
+            ? '-translate-y-full duration-[1000ms]' 
+            : isJerking 
+                ? 'translate-y-4 duration-300'       
+                : 'translate-y-0 duration-200'       
+        }
+      `}
+      style={{
+        backgroundImage: `repeating-linear-gradient(
+          0deg,
+          #111111,
+          #111111 10vh,
+          #FCD34D 10vh,
+          #FCD34D 10.5vh
+        )`,
+        backgroundColor: '#111'
+      }}
+    >
+      <div className="relative z-10 flex flex-col items-center">
+        <div className="text-center mb-10">
+          <h1 className="text-custom-yellow font-shrikhand text-4xl md:text-7xl mb-4 drop-shadow-[4px_4px_0_rgba(0,0,0,1)] tracking-wider">
+            LOADING...
+          </h1>
+          <div className="font-mono font-bold text-2xl text-white bg-black px-4 py-1 inline-block border-2 border-b-4 border-r-4 border-white">
+            {Math.floor(progress)}%
           </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+        </div>
+
+        <div className="w-80 md:w-[500px] h-14 bg-black border-2 border-white border-b-8 border-r-8 rounded-4xl relative">
+          <div 
+            className="h-full bg-custom-yellow rounded-4xl transition-all duration-200 ease-out relative overflow-hidden"
+            style={{ width: `${progress}%` }}
+          >
+            <div className="absolute inset-0 opacity-20"></div>
+          </div>
+        </div>
+      </div>
+
+      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center">
+        <div className="w-64 h-8 bg-yellow-500 rounded-full border-4 border-amber-700 shadow-[0px_10px_20px_rgba(0,0,0,0.8)] relative flex items-center justify-between px-4">
+            <div className="w-3 h-3 bg-yellow-100 rounded-full border border-black"></div>
+            <div className="w-20 h-2 bg-amber-950 rounded-full inset-shadow"></div>
+            <div className="w-3 h-3 bg-gray-100 rounded-full border border-black"></div>
+        </div>
+      </div>
+
+      <div className="absolute bottom-0 left-0 right-0 h-6 bg-custom-yellow border-t-4 border-custom-yellow"></div>
+    </div>
   );
 };
 

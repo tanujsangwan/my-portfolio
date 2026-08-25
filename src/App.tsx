@@ -1,25 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import Navbar from './components/layout/Navbar';
-import Footer from './components/layout/Footer';
+import Taskbar from './components/layout/Taskbar';
 import Hero from './components/sections/Hero';
 import Skills from './components/sections/Skills';
 import Projects from './components/sections/Projects';
 import Education from './components/sections/Education';
-import Achievements from './components/sections/Achievements';
+import Footer from './components/layout/Footer';
+import CustomCursor from './components/ui/CustomCursor';
 import Marquee from './components/ui/Marquee';
 import Preloader from './components/ui/Preloader';
-import CustomCursor from './components/ui/CustomCursor';
-import ContactModal from './components/ui/ContactModal';
+import MiniTerminal from './components/ui/MiniTerminal';
 
-const App: React.FC = () => {
+function App() {
   const [scrollProgress, setScrollProgress] = useState(0);
-  const [isContactModalOpen, setIsContactModalOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
       const totalScroll = document.documentElement.scrollTop;
       const windowHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-      const scroll = `${(totalScroll / windowHeight) * 100}`;
+      const scroll = `${totalScroll / windowHeight}`;
       setScrollProgress(Number(scroll));
     };
 
@@ -28,35 +26,26 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <>
+    <div className="min-h-screen bg-custom-blue overflow-x-hidden selection:bg-custom-yellow selection:text-black font-sans relative">
       <Preloader />
       <CustomCursor />
-      
-      {/* Scroll Progress Bar */}
-      <div 
-        className="fixed top-0 left-0 h-1 bg-indigo-500 z-50 transition-all duration-75"
-        style={{ width: `${scrollProgress}%` }}
-      />
 
-      <Navbar onContactClick={() => setIsContactModalOpen(true)} />
-      
-      <main>
-        <Hero onContactClick={() => setIsContactModalOpen(true)} />
+      <div className="fixed top-0 left-0 h-2 bg-custom-green z-[100] transition-all duration-100 ease-out" style={{ width: `${scrollProgress * 100}%` }}></div>
+      <div className="fixed top-0 left-0 w-full h-2 bg-custom-yellow z-[90]"></div>
+
+      <Taskbar />
+
+      <main className="flex flex-col gap-20 pt-32 pb-20">
+        <Hero />
         <Skills />
         <Projects />
         <Education />
-        <Achievements />
         <Marquee />
       </main>
 
       <Footer />
-      
-      <ContactModal 
-        isOpen={isContactModalOpen} 
-        onClose={() => setIsContactModalOpen(false)} 
-      />
-    </>
+    </div>
   );
-};
+}
 
 export default App;

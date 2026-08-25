@@ -1,92 +1,113 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { FaGithub, FaLinkedin, FaCode, FaMapMarkerAlt, FaEnvelope } from 'react-icons/fa';
+import React, { useState } from 'react';
+import { FaGithub, FaLinkedin, FaCode, FaDownload, FaEnvelope, FaExclamationTriangle } from 'react-icons/fa';
+import ContactModal from '../ui/ContactModal';
 import MiniTerminal from '../ui/MiniTerminal';
 
-interface HeroProps {
-  onContactClick: () => void;
-}
+const Hero = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isResumeModalOpen, setIsResumeModalOpen] = useState(false);
 
-const Hero: React.FC<HeroProps> = ({ onContactClick }) => {
   return (
-    <section id="about" className="min-h-screen pt-28 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto flex items-center">
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center w-full">
+    <section className="pt-4 pb-10 px-4 max-w-7xl mx-auto flex flex-col md:flex-row gap-8 items-start justify-center">
+      
+      {/* Left Column - Profile Card */}
+      <div className="w-full md:w-1/3 bg-white border-2 border-b-4 border-r-4 border-black rounded-3xl p-6 shadow-neo flex flex-col items-center text-center relative overflow-hidden">
         
-        {/* Left Column: Profile Card */}
-        <motion.div 
-          className="lg:col-span-4 bg-white rounded-3xl p-8 shadow-[0_2px_24px_rgba(0,0,0,0.06)] border border-slate-100 flex flex-col items-center text-center relative overflow-hidden"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          {/* Decorative background element */}
-          <div className="absolute top-0 w-full h-32 bg-indigo-50/50 -z-10"></div>
-          
-          <div className="w-32 h-32 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white text-4xl font-bold shadow-lg mb-6 border-4 border-white">
-            TS
-          </div>
-          
-          <h1 className="text-2xl font-bold text-slate-800 mb-1">TANUJ SANGWAN</h1>
-          <p className="text-indigo-600 font-medium mb-6">B.Tech CSE Student & Developer</p>
-          
-          <div className="w-full space-y-3 mb-8">
-            <div className="flex items-center justify-center text-slate-500 bg-slate-50 py-2 rounded-lg">
-              <FaMapMarkerAlt className="mr-2 text-indigo-400" />
-              <span className="text-sm">Andhra Pradesh, India</span>
-            </div>
-            <div className="flex items-center justify-center text-slate-500 bg-slate-50 py-2 rounded-lg">
-              <FaEnvelope className="mr-2 text-indigo-400" />
-              <span className="text-sm">tanujsangwan1770@gmail.com</span>
-            </div>
-          </div>
-          
-          <div className="flex justify-center space-x-4 w-full mb-8">
-            <a href="https://github.com/tanujsangwan" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-indigo-100 hover:text-indigo-600 transition-colors">
-              <FaGithub size={18} />
-            </a>
-            <a href="https://www.linkedin.com/in/tanuj-sangwan-3801bb32a/" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-indigo-100 hover:text-indigo-600 transition-colors">
-              <FaLinkedin size={18} />
-            </a>
-            <a href="https://leetcode.com/u/TanujCode" target="_blank" rel="noreferrer" className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-indigo-100 hover:text-indigo-600 transition-colors">
-              <FaCode size={18} />
-            </a>
-          </div>
-          
-          <div className="w-full flex flex-col space-y-3">
-            <button className="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-medium transition-colors shadow-md shadow-indigo-200">
-              Download Resume
-            </button>
-            <button onClick={onContactClick} className="w-full py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium transition-colors">
-              Contact Me
-            </button>
-          </div>
-        </motion.div>
+        {/* Tape decoration */}
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-gray-200/50 w-20 h-6 rotate-[-5deg] border border-gray-400"></div>
 
-        {/* Right Column: Content */}
-        <motion.div 
-          className="lg:col-span-8 flex flex-col justify-center"
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-        >
-          <div className="inline-flex items-center px-3 py-1 rounded-full bg-indigo-50 text-indigo-600 text-sm font-medium mb-6 w-max">
-            <span>🎓 Open to internships & opportunities</span>
+        {/* Profile Image / Initial Placeholder */}
+        <div className="w-32 h-32 bg-custom-pink rounded-full border-4 border-black mb-4 flex items-center justify-center text-5xl font-shrikhand overflow-hidden">
+          TS
+        </div>
+
+        <h1 className="text-4xl font-shrikhand mb-1">TANUJ</h1>
+        <div className="bg-black text-white px-3 py-1 font-mono text-sm rounded-md mb-4 rotate-1">
+          B.TECH_CSE_STUDENT()
+        </div>
+
+        <div className="w-full space-y-3 text-left font-bold text-sm font-mono border-t-2 border-black pt-4">
+          <div>
+            <span className="bg-custom-yellow px-1 border border-black mr-2">[LOCATION]</span>
+            ANDHRA PRADESH, INDIA
           </div>
-          
-          <h2 className="text-5xl sm:text-6xl font-bold text-slate-800 mb-6 leading-tight">
-            Hi, I'm Tanuj <span className="inline-block animate-bounce">👋</span>
-          </h2>
-          
-          <p className="text-lg text-slate-600 mb-10 leading-relaxed max-w-2xl">
-            Motivated B.Tech Computer Science student with an 8.97 CGPA. I have a strong foundation in DSA, AI, ML, and web development. Skilled in Python, Java, SQL, React, and FastAPI. I love building clean, efficient, and user-friendly applications.
-          </p>
-          
-          <div className="w-full max-w-2xl">
-            <MiniTerminal />
+          <div>
+            <span className="bg-custom-green px-1 border border-black mr-2">[STATUS]</span>
+            4th YEAR BTECH STUDENT
           </div>
-        </motion.div>
-        
+          <div>
+            <span className="bg-custom-blue px-1 border border-black mr-2">[MISSION]</span>
+            Code. Learn. Build.
+          </div>
+        </div>
+
+        {/* Buttons */}
+        <div className="w-full flex flex-col gap-3 mt-6">
+          <button 
+            onClick={() => setIsResumeModalOpen(true)}
+            className="bg-custom-green w-full py-3 rounded-xl border-2 border-black font-bold shadow-neo-sm hover:translate-y-1 hover:shadow-none transition-all flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <FaDownload /> DOWNLOAD_RESUME
+          </button>
+          <button 
+            onClick={() => setIsModalOpen(true)}
+            className="bg-custom-red text-white w-full py-3 rounded-xl border-2 border-black font-bold shadow-neo-sm hover:translate-y-1 hover:shadow-none transition-all flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <FaEnvelope /> CONTACT ME
+          </button>
+        </div>
+
+        {/* Social Links */}
+        <div className="flex gap-4 mt-6 text-2xl flex-wrap justify-center">
+          <a href="mailto:tanujsangwan1770@gmail.com" className="hover:scale-110 transition-transform text-red-500"><FaEnvelope /></a>
+          <a href="https://github.com/tanujsangwan" target="_blank" rel="noreferrer" className="hover:scale-110 transition-transform"><FaGithub /></a>
+          <a href="https://www.linkedin.com/in/tanuj-sangwan-3801bb32a/" target="_blank" rel="noreferrer" className="hover:scale-110 transition-transform text-blue-700"><FaLinkedin /></a>
+          <a href="https://leetcode.com/u/TanujCode/" target="_blank" rel="noreferrer" className="hover:scale-110 transition-transform text-orange-600"><FaCode /></a>
+        </div>
       </div>
+
+      {/* Right Column */}
+      <div className="w-full md:w-2/3 flex flex-col gap-6" id="about">
+        
+        {/* Intro Card */}
+        <div className="bg-custom-yellow p-6 md:p-10 rounded-3xl border-2 border-b-4 border-r-4 border-black shadow-neo">
+          <h2 className="text-4xl font-shrikhand mb-6">Hi people!</h2>
+          <p className="text-lg font-medium leading-relaxed mb-4">
+            I'm a <span className="font-bold bg-white px-1 border border-black">final-year CSE student at VIT-AP</span> with an 8.97 CGPA. I have a strong foundation in <span className="font-bold bg-white px-1 border border-black">Data Structures and Algorithms, AI, ML, and web development</span>.
+          </p>
+          <p className="text-lg font-medium leading-relaxed mb-4">
+            Skilled in Python, Java, SQL, React, REST APIs, and FastAPI. I am eager to build reliable, data-driven software solutions!
+          </p>
+          <div className="bg-white p-4 border-2 border-black rounded-xl inline-block font-bold shadow-neo-sm ">
+            🚀 Open to Software Engineering opportunities
+          </div>
+        </div>
+
+        <MiniTerminal />
+      </div>
+
+      <ContactModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+
+      {/* Fake Resume Modal */}
+      {isResumeModalOpen && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[70] p-4">
+          <div className="bg-white w-full max-w-sm border-4 border-black rounded-3xl p-8 shadow-neo relative animate-bounce-in text-center flex flex-col items-center">
+            <div className="text-7xl text-custom-yellow mb-6 drop-shadow-[4px_4px_0_rgba(0,0,0,1)]">
+              <FaExclamationTriangle />
+            </div>
+            <h2 className="text-3xl font-shrikhand mb-4 uppercase">Coming Soon</h2>
+            <p className="font-bold text-lg border-2 border-black p-4 bg-gray-100 rounded-xl leading-snug">
+              Resume is currently being updated! Check back later.
+            </p>
+            <button 
+              onClick={() => setIsResumeModalOpen(false)}
+              className="mt-8 w-full bg-custom-red text-white font-bold py-3 border-4 border-black rounded-xl shadow-[4px_4px_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-1 transition-all cursor-pointer uppercase tracking-wider"
+            >
+              UNDERSTAND
+            </button>
+          </div>
+        </div>
+      )}
     </section>
   );
 };
