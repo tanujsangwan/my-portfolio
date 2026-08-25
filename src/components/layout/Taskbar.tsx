@@ -6,11 +6,24 @@ const Taskbar = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [prevScrollPos, setPrevScrollPos] = useState(0);
+  const [visible, setVisible] = useState(true);
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 60000);
     return () => clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollPos = window.scrollY;
+      setVisible(prevScrollPos > currentScrollPos || currentScrollPos < 10);
+      setPrevScrollPos(currentScrollPos);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [prevScrollPos]);
 
   const formatDate = (date: Date) => {
     const options: Intl.DateTimeFormatOptions = {
@@ -38,7 +51,11 @@ const Taskbar = () => {
 
   return (
     <>
-      <nav className="fixed top-4 left-4 right-4 z-50 bg-custom-bg border-4 border-black rounded-full px-4 py-3 shadow-neo flex justify-between items-center max-w-7xl mx-auto">
+      <nav 
+        className={`fixed left-4 right-4 z-50 bg-custom-bg border-4 border-black rounded-full px-4 py-3 shadow-neo flex justify-between items-center max-w-7xl mx-auto transition-all duration-300 ${
+          visible ? 'top-4 translate-y-0' : '-top-24 -translate-y-full'
+        }`}
+      >
         <div className="text-xl md:text-2xl font-shrikhand text-white drop-shadow-[2px_2px_0_rgba(0,0,0,1)] ml-2">
           PORTFOLIO
         </div>

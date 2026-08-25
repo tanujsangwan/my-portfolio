@@ -49,12 +49,12 @@ const Hero = () => {
           >
             <FaDownload /> DOWNLOAD_RESUME
           </button>
-          <button 
-            onClick={() => setIsModalOpen(true)}
+          <a 
+            href="mailto:tanujsangwan1770@gmail.com"
             className="bg-custom-red text-white w-full py-3 rounded-xl border-2 border-black font-bold shadow-neo-sm hover:translate-y-1 hover:shadow-none transition-all flex items-center justify-center gap-2 cursor-pointer"
           >
             <FaEnvelope /> CONTACT ME
-          </button>
+          </a>
         </div>
 
         {/* Social Links */}
