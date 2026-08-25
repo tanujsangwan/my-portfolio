@@ -2,20 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 const LeetCodeStats = () => {
   const [stats, setStats] = useState<any>(null);
-
-  // Fallback data exactly matching your screenshot so it NEVER says failed
-  const fallbackData = {
-    status: "success",
-    totalSolved: 96,
-    totalQuestions: 4033,
-    easySolved: 55,
-    totalEasy: 961,
-    mediumSolved: 39,
-    totalMedium: 2105,
-    hardSolved: 2,
-    totalHard: 967,
-    badges: 0
-  };
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     fetch('https://leetcode-stats-api.herokuapp.com/TanujCode')
@@ -24,19 +11,29 @@ const LeetCodeStats = () => {
         if (data.status === 'success') {
           setStats(data);
         } else {
-          setStats(fallbackData);
+          setError(true);
         }
       })
       .catch(() => {
-        setStats(fallbackData);
+        setError(true);
       });
   }, []);
+
+  if (error) {
+    return (
+      <section id="leetcode" className="py-10 px-4 mx-auto max-w-7xl bg-custom-orange border-2 border-b-4 border-r-4 border-black rounded-3xl shadow-neo my-10">
+         <div className="text-center font-bold font-mono py-10 text-red-600 text-lg">
+            Failed to load stats directly from LeetCode. Please try again later.
+          </div>
+      </section>
+    );
+  }
 
   if (!stats) {
     return (
       <section id="leetcode" className="py-10 px-4 mx-auto max-w-7xl bg-custom-orange border-2 border-b-4 border-r-4 border-black rounded-3xl shadow-neo my-10">
          <div className="text-center font-bold font-mono py-10 animate-pulse text-lg">
-            Loading LeetCode Profile...
+            Fetching real-time LeetCode Profile...
           </div>
       </section>
     );
@@ -47,14 +44,36 @@ const LeetCodeStats = () => {
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (percentage / 100) * circumference;
 
-  // Generate a mock 52-week heatmap (similar to GitHub/LeetCode)
-  const weeks = Array.from({ length: 52 }).map(() =>
-    Array.from({ length: 7 }).map(() => {
-      const rand = Math.random();
-      if (rand > 0.8) return Math.floor(Math.random() * 3) + 1; // Green shades
-      return 0; // Empty
-    })
-  );
+  // Real Heatmap Processing
+  const calendar = typeof stats.submissionCalendar === 'string' ? JSON.parse(stats.submissionCalendar) : stats.submissionCalendar;
+  const activityMap: Record<string, number> = {};
+  let totalSubmissions = 0;
+  
+  if (calendar) {
+      Object.entries(calendar).forEach(([timestamp, count]: [string, any]) => {
+          const date = new Date(parseInt(timestamp) * 1000);
+          const dateString = date.toISOString().split('T')[0];
+          activityMap[dateString] = (activityMap[dateString] || 0) + count;
+          totalSubmissions += count;
+      });
+  }
+
+  const weeks = [];
+  for (let i = 51; i >= 0; i--) {
+      const week = [];
+      for (let j = 0; j < 7; j++) {
+          const d = new Date();
+          d.setDate(d.getDate() - (i * 7 + (6 - j)));
+          const dateString = d.toISOString().split('T')[0];
+          const count = activityMap[dateString] || 0;
+          let level = 0;
+          if (count > 0) level = 1;
+          if (count > 2) level = 2;
+          if (count > 4) level = 3;
+          week.push(level);
+      }
+      weeks.push(week);
+  }
 
   return (
     <section id="leetcode" className="py-10 px-4 mx-auto max-w-7xl bg-custom-orange border-2 border-b-4 border-r-4 border-black rounded-3xl shadow-neo my-10">
@@ -67,7 +86,7 @@ const LeetCodeStats = () => {
       <div className="bg-[#1A1A1A] border-4 border-black p-4 md:p-8 rounded-3xl shadow-neo max-w-5xl mx-auto text-white font-sans flex flex-col gap-6">
 
         <div className="flex flex-col md:flex-row gap-6">
-            {/* Left Circle Area (Progress) */}
+            {/* Left Circle Area */}
             <div className="flex-1 bg-[#282828] p-6 rounded-2xl flex items-center justify-center gap-6 border-2 border-black shadow-neo-sm">
                 <div className="relative flex items-center justify-center">
                     <svg width="120" height="120" className="transform -rotate-90">
@@ -114,7 +133,6 @@ const LeetCodeStats = () => {
                     <div className="text-white font-bold text-lg">Aug LeetCoding Challenge</div>
                 </div>
                 <div className="absolute right-[-20px] top-1/2 -translate-y-1/2 opacity-10">
-                    {/* Fake Badge Background Icon */}
                     <svg width="150" height="150" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
                 </div>
             </div>
@@ -123,8 +141,7 @@ const LeetCodeStats = () => {
         {/* Heatmap Area */}
         <div className="bg-[#282828] p-6 rounded-2xl border-2 border-black shadow-neo-sm overflow-hidden">
             <div className="text-sm font-bold mb-6 flex justify-between items-end border-b border-gray-700 pb-2">
-                <span className="text-xl">{stats.totalSolved * 3 + 12} <span className="text-gray-400 text-sm font-normal">submissions in the past one year</span></span>
-                <span className="text-gray-400 text-xs hidden sm:block">Total active days: <span className="text-white font-bold">{stats.totalSolved}</span> &nbsp;&nbsp; Max streak: <span className="text-white font-bold">{Math.floor(stats.totalSolved / 2)}</span></span>
+                <span className="text-xl">{totalSubmissions} <span className="text-gray-400 text-sm font-normal">submissions in the past one year</span></span>
             </div>
             
             <div className="flex gap-1 overflow-x-auto pb-4 custom-scrollbar">
