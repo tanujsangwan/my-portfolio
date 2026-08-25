@@ -42,7 +42,7 @@ const Projects = () => {
     const projects = [
       {
         title: "Interactive Portfolio",
-        color: "bg-custom-purple", 
+        color: "bg-custom-bg", 
         tools: ["React", "JavaScript", "Framer Motion", "REST APIs", "CSS"],
         link: "https://github.com/tanujsangwan/portfolio", 
         live: true,

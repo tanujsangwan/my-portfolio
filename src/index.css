@@ -9,12 +9,13 @@
    ================================ */
 @theme {
   /* Colors */
-  --color-custom-pink: #FF9FAC;
-  --color-custom-purple: #A78BFA;
+  --color-custom-sky: #7DD3FC;
+  --color-custom-bg: #93C5FD;
   --color-custom-blue: #60A5FA;
   --color-custom-red: #F87171;
   --color-custom-yellow: #FCD34D;
   --color-custom-green: #4ADE80;
+  --color-custom-orange: #FB923C;
 
   /* Fonts */
   --font-shrikhand: "Shrikhand", cursive;
@@ -29,7 +30,7 @@
    Base styles
    ================================ */
 body {
-  background-color: var(--color-custom-blue);
+  background-color: var(--color-custom-bg);
   color: black;
   font-family: var(--font-sans);
   min-height: 100vh;
@@ -54,7 +55,7 @@ body {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-custom-pink);
+  background: var(--color-custom-sky);
 }
 
 @keyframes marquee {
@@ -78,6 +79,6 @@ body {
   background: #000;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #22d3ee;
+  background: #7DD3FC;
   border-radius: 4px;
 }

@@ -17,7 +17,7 @@ const Hero = () => {
         <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-gray-200/50 w-20 h-6 rotate-[-5deg] border border-gray-400"></div>
 
         {/* Profile Image / Initial Placeholder */}
-        <div className="w-32 h-32 bg-custom-pink rounded-full border-4 border-black mb-4 flex items-center justify-center text-5xl font-shrikhand overflow-hidden">
+        <div className="w-32 h-32 bg-custom-sky rounded-full border-4 border-black mb-4 flex items-center justify-center text-5xl font-shrikhand overflow-hidden">
           TS
         </div>
 

@@ -3,12 +3,12 @@ import Taskbar from './components/layout/Taskbar';
 import Hero from './components/sections/Hero';
 import Skills from './components/sections/Skills';
 import Projects from './components/sections/Projects';
+import LeetCodeStats from './components/sections/LeetCodeStats';
 import Education from './components/sections/Education';
 import Footer from './components/layout/Footer';
 import CustomCursor from './components/ui/CustomCursor';
 import Marquee from './components/ui/Marquee';
 import Preloader from './components/ui/Preloader';
-import MiniTerminal from './components/ui/MiniTerminal';
 
 function App() {
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -26,7 +26,7 @@ function App() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-custom-blue overflow-x-hidden selection:bg-custom-yellow selection:text-black font-sans relative">
+    <div className="min-h-screen bg-custom-bg overflow-x-hidden selection:bg-custom-yellow selection:text-black font-sans relative">
       <Preloader />
       <CustomCursor />
 
@@ -35,10 +35,11 @@ function App() {
 
       <Taskbar />
 
-      <main className="flex flex-col gap-20 pt-32 pb-20">
+      <main className="flex flex-col gap-10 pt-32 pb-20">
         <Hero />
         <Skills />
         <Projects />
+        <LeetCodeStats />
         <Education />
         <Marquee />
       </main>

@@ -38,7 +38,7 @@ const Taskbar = () => {
 
   return (
     <>
-      <nav className="fixed top-4 left-4 right-4 z-50 bg-custom-purple border-4 border-black rounded-full px-4 py-3 shadow-neo flex justify-between items-center max-w-7xl mx-auto">
+      <nav className="fixed top-4 left-4 right-4 z-50 bg-custom-bg border-4 border-black rounded-full px-4 py-3 shadow-neo flex justify-between items-center max-w-7xl mx-auto">
         <div className="text-xl md:text-2xl font-shrikhand text-white drop-shadow-[2px_2px_0_rgba(0,0,0,1)] ml-2">
           PORTFOLIO
         </div>
@@ -57,7 +57,7 @@ const Taskbar = () => {
           ))}
           <button
             onClick={() => setIsModalOpen(true)}
-            className="px-5 py-2 bg-custom-pink text-black border-2 border-black border-b-8 border-r-8 rounded-full 
+            className="px-5 py-2 bg-custom-sky text-black border-2 border-black border-b-8 border-r-8 rounded-full 
                        hover:border-b-4 hover:border-r-4 active:translate-y-1 transition-all cursor-pointer"
           >
             CONTACT
@@ -78,7 +78,7 @@ const Taskbar = () => {
       </nav>
 
       {isMenuOpen && (
-        <div className="fixed top-24 left-4 right-4 z-40 bg-custom-purple border-4 border-black rounded-3xl p-4 flex flex-col gap-3 shadow-neo animate-bounce-in lg:hidden max-w-7xl mx-auto">
+        <div className="fixed top-24 left-4 right-4 z-40 bg-custom-bg border-4 border-black rounded-3xl p-4 flex flex-col gap-3 shadow-neo animate-bounce-in lg:hidden max-w-7xl mx-auto">
           {navLinks.map((link) => (
             <button
               key={link.name}
@@ -93,7 +93,7 @@ const Taskbar = () => {
               setIsMenuOpen(false);
               setIsModalOpen(true);
             }}
-            className="bg-custom-pink border-2 border-black border-b-4 border-r-4 p-3 rounded-xl font-bold active:border-b-2 active:border-r-2 active:translate-y-1 text-left transition-all"
+            className="bg-custom-sky border-2 border-black border-b-4 border-r-4 p-3 rounded-xl font-bold active:border-b-2 active:border-r-2 active:translate-y-1 text-left transition-all"
           >
             CONTACT
           </button>

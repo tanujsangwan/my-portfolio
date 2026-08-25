@@ -34,7 +34,7 @@ const CustomCursor = () => {
         >
           <path 
             d="M5.5 2L18 13.5L11.5 13.5L15 21L12 22L8.5 14.5L2.5 19.5L5.5 2Z" 
-            fill="#FF9FAC"   
+            fill="#7DD3FC"   
             stroke="black"   
             strokeWidth="2"  
             strokeLinejoin="round"
