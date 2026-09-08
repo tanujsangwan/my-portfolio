@@ -1,30 +1,37 @@
 import { useEffect, useState, useRef } from 'react';
 
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-const BASE = 'https://alfa-leetcode-api.onrender.com';
+const VERCEL_API = 'https://leetcode-api-faisalshohag.vercel.app';
+const ALFA_API   = 'https://alfa-leetcode-api.onrender.com';
 
 const LeetCodeStats = () => {
-  const [stats,    setStats]    = useState<any>(null);
-  const [badges,   setBadges]   = useState<any>(null);
-  const [calData,  setCalData]  = useState<any>(null);
-  const [loading,  setLoading]  = useState(true);
-  const [error,    setError]    = useState(false);
+  const [stats,   setStats]   = useState<any>(null);
+  const [badges,  setBadges]  = useState<any>(null);
+  const [calData, setCalData] = useState<any>(null);
+  const [error,   setError]   = useState(false);
   const heatRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    Promise.all([
-      fetch(`${BASE}/userProfile/TanujCode`).then(r => r.json()),
-      fetch(`${BASE}/TanujCode/badges`).then(r => r.json()),
-      fetch(`${BASE}/TanujCode/calendar`).then(r => r.json()),
-    ])
-      .then(([profile, badgeData, calendar]) => {
-        if (!profile || profile.totalSolved === undefined) { setError(true); return; }
-        setStats(profile);
-        setBadges(badgeData);
-        setCalData(calendar);
-        setLoading(false);
+    // ① Fast Vercel API for stats — loads in ~1-2s
+    fetch(`${VERCEL_API}/TanujCode`)
+      .then(r => r.json())
+      .then(d => {
+        if (d?.totalSolved !== undefined) setStats(d);
+        else setError(true);
       })
       .catch(() => setError(true));
+
+    // ② Alfa API for badges — loads independently (may take 30-60s on cold start)
+    fetch(`${ALFA_API}/TanujCode/badges`)
+      .then(r => r.json())
+      .then(d => setBadges(d))
+      .catch(() => {}); // fail silently, badge panel stays loading
+
+    // ③ Alfa API for calendar — loads independently
+    fetch(`${ALFA_API}/TanujCode/calendar`)
+      .then(r => r.json())
+      .then(d => setCalData(d))
+      .catch(() => {}); // fail silently, heatmap still works from vercel calendar
   }, []);
 
   if (error) return (
@@ -35,7 +42,7 @@ const LeetCodeStats = () => {
     </section>
   );
 
-  if (loading) return (
+  if (!stats) return (
     <section id="leetcode" className="py-10 px-4 mx-auto max-w-7xl bg-custom-orange border-2 border-b-4 border-r-4 border-black rounded-3xl shadow-neo my-10">
       <div className="text-center font-bold font-mono py-10 animate-pulse text-lg">
         Fetching real-time LeetCode profile…
@@ -49,7 +56,11 @@ const LeetCodeStats = () => {
   const pct    = stats.totalSolved / stats.totalQuestions;
   const offset = circ - pct * circ;
 
-  // ── Heatmap ──────────────────────────────────────────────────────────────
+  // ── Heatmap: prefer alfa calendar (has streak/active), fallback to vercel ──
+  const rawCalSrc = calData?.submissionCalendar ?? stats.submissionCalendar;
+  const rawCal: Record<string, number> =
+    typeof rawCalSrc === 'string' ? JSON.parse(rawCalSrc) : rawCalSrc || {};
+
   const toKey = (d: Date) => {
     const y = d.getFullYear();
     const m = String(d.getMonth() + 1).padStart(2, '0');
@@ -57,12 +68,6 @@ const LeetCodeStats = () => {
     return `${y}-${m}-${day}`;
   };
 
-  const rawCal: Record<string, number> =
-    typeof calData?.submissionCalendar === 'string'
-      ? JSON.parse(calData.submissionCalendar)
-      : calData?.submissionCalendar || {};
-
-  // Convert UNIX timestamps → YYYY-MM-DD map
   const activity: Record<string, number> = {};
   let totalSubs = 0;
   Object.entries(rawCal).forEach(([ts, cnt]: [string, any]) => {
@@ -72,10 +77,10 @@ const LeetCodeStats = () => {
     totalSubs += cnt as number;
   });
 
-  // Build 53-week grid starting from the Sunday 52 weeks ago
+  // Build 53-week grid (Sunday-aligned)
   const today = new Date();
   const gridStart = new Date(today);
-  gridStart.setDate(today.getDate() - 364 - today.getDay()); // previous Sunday ≥ 52 wks ago
+  gridStart.setDate(today.getDate() - 364 - today.getDay());
 
   interface Cell { key: string; level: number; future: boolean; count: number }
   const weeks: Cell[][] = [];
@@ -83,8 +88,8 @@ const LeetCodeStats = () => {
   let lastMonth = -1;
   const cur = new Date(gridStart);
 
-  for (let w = 0; w < 53; w++) {
-    if (cur > today && w > 0) break;
+  for (let w = 0; w < 54; w++) {
+    if (cur > today && w > 1) break;
     const week: Cell[] = [];
     const firstDay = new Date(cur);
     for (let d = 0; d < 7; d++) {
@@ -106,16 +111,15 @@ const LeetCodeStats = () => {
     weeks.push(week);
   }
 
-  const CELL  = 13;
-  const GAP   = 3;
-  const STEP  = CELL + GAP;
-
+  const CELL   = 13;
+  const GAP    = 3;
+  const STEP   = CELL + GAP;
   const COLORS = ['#2D2D2D', '#0E4429', '#006D32', '#26A641', '#39D353'];
 
-  // ── Badge info ────────────────────────────────────────────────────────────
-  const badgeCount   = badges?.badgesCount ?? 0;
-  const activeBadge  = badges?.activeBadge;
-  const upcomingList = badges?.upcomingBadges ?? [];
+  // ── Badge info (may still be loading) ────────────────────────────────────
+  const badgeCount  = badges?.badgesCount ?? null;
+  const activeBadge = badges?.activeBadge;
+  const upcoming    = badges?.upcomingBadges ?? [];
 
   return (
     <section id="leetcode" className="py-10 px-4 mx-auto max-w-7xl bg-custom-orange border-2 border-b-4 border-r-4 border-black rounded-3xl shadow-neo my-10">
@@ -127,7 +131,7 @@ const LeetCodeStats = () => {
 
       <div className="bg-[#1A1A1A] border-4 border-black p-4 md:p-6 rounded-3xl shadow-neo max-w-5xl mx-auto text-white font-sans flex flex-col gap-5">
 
-        {/* ── Top Row: Stats + Badges ── */}
+        {/* ── Top Row ── */}
         <div className="flex flex-col md:flex-row gap-5">
 
           {/* Donut + difficulty bars */}
@@ -166,35 +170,43 @@ const LeetCodeStats = () => {
             </div>
           </div>
 
-          {/* Real badge panel */}
+          {/* Badge panel — shows spinner while alfa loads */}
           <div className="flex-1 bg-[#282828] p-5 rounded-2xl border border-[#444] flex flex-col gap-3">
             <div>
               <div className="text-gray-400 text-sm">Badges</div>
-              <div className="text-5xl font-bold mt-1">{badgeCount}</div>
+              {badgeCount === null ? (
+                <div className="text-gray-500 text-sm animate-pulse mt-2">Loading…</div>
+              ) : (
+                <div className="text-5xl font-bold mt-1">{badgeCount}</div>
+              )}
             </div>
 
-            {activeBadge && (
+            {activeBadge ? (
               <div className="flex items-center gap-3 mt-auto">
                 <img
                   src={activeBadge.icon.startsWith('http') ? activeBadge.icon : `https://leetcode.com${activeBadge.icon}`}
                   alt={activeBadge.displayName}
-                  className="w-12 h-12 object-contain"
+                  className="w-14 h-14 object-contain"
                   onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
                 />
                 <div>
                   <div className="text-gray-500 text-[10px] uppercase tracking-wide">Active Badge</div>
                   <div className="text-white font-bold text-sm leading-snug">{activeBadge.displayName}</div>
-                  <div className="text-gray-500 text-[10px]">{activeBadge.creationDate}</div>
+                  <div className="text-gray-400 text-[10px]">{activeBadge.creationDate}</div>
                 </div>
               </div>
-            )}
+            ) : badgeCount !== null && badgeCount === 0 ? (
+              <div className="text-gray-500 text-sm mt-auto">No active badge yet</div>
+            ) : badgeCount !== null ? (
+              <div className="text-gray-500 text-sm mt-auto animate-pulse">Loading badge…</div>
+            ) : null}
 
-            {upcomingList.length > 0 && (
+            {upcoming.length > 0 && (
               <div className="border-t border-[#444] pt-2">
                 <div className="text-gray-500 text-[10px] uppercase tracking-wide mb-1">Upcoming</div>
-                <div className="flex gap-2 flex-wrap">
-                  {upcomingList.slice(0, 3).map((b: any, i: number) => (
-                    <div key={i} className="text-[10px] bg-[#3A3A3A] px-2 py-1 rounded text-gray-300 border border-[#555]">
+                <div className="flex gap-1 flex-wrap">
+                  {upcoming.slice(0, 3).map((b: any, i: number) => (
+                    <div key={i} className="text-[10px] bg-[#3A3A3A] px-2 py-0.5 rounded text-gray-300 border border-[#555]">
                       {b.name}
                     </div>
                   ))}
@@ -208,35 +220,37 @@ const LeetCodeStats = () => {
         <div className="bg-[#282828] p-5 rounded-2xl border border-[#444]">
           <div className="flex flex-wrap items-center justify-between mb-4 border-b border-[#444] pb-3 gap-2">
             <span className="font-bold text-base">
-              {totalSubs} <span className="text-gray-400 font-normal text-sm">submissions in the past one year</span>
+              {totalSubs}{' '}
+              <span className="text-gray-400 font-normal text-sm">submissions in the past one year</span>
             </span>
             <span className="text-gray-400 text-xs">
-              Active days: <strong className="text-white">{calData?.totalActiveDays ?? '—'}</strong>
-              &nbsp;&nbsp;Max streak: <strong className="text-white">{calData?.streak ?? '—'}</strong>
+              {calData ? (
+                <>
+                  Total active days: <strong className="text-white">{calData.totalActiveDays}</strong>
+                  &nbsp;&nbsp;Max streak: <strong className="text-white">{calData.streak}</strong>
+                </>
+              ) : (
+                <span className="animate-pulse">Loading streak…</span>
+              )}
             </span>
           </div>
 
           <div ref={heatRef} className="overflow-x-auto pb-1">
             <svg width={weeks.length * STEP} height={7 * STEP + 18} style={{ display: 'block' }}>
-
-              {/* Cells — no day labels, no left padding */}
+              {/* Cells */}
               {weeks.map((week, col) =>
                 week.map((cell, row) => (
                   <rect key={`${col}-${row}`}
-                    x={col * STEP}
-                    y={row * STEP}
+                    x={col * STEP} y={row * STEP}
                     width={CELL} height={CELL} rx={2} ry={2}
                     fill={cell.future ? 'transparent' : COLORS[cell.level]}>
                     <title>{cell.key}: {cell.count} submissions</title>
                   </rect>
                 ))
               )}
-
-              {/* Month labels at BOTTOM — exactly like real LeetCode */}
+              {/* Month labels at BOTTOM */}
               {monthLabels.map(({ label, col }, i) => (
-                <text key={i}
-                  x={col * STEP}
-                  y={7 * STEP + 14}
+                <text key={i} x={col * STEP} y={7 * STEP + 14}
                   fontSize={10} fill="#6B7280" fontFamily="monospace">{label}</text>
               ))}
             </svg>
