@@ -109,13 +109,8 @@ const LeetCodeStats = () => {
   const CELL  = 13;
   const GAP   = 3;
   const STEP  = CELL + GAP;
-  const PAD_L = 26;  // day-label width
-  const PAD_T = 18;  // month-label height
-  const svgW  = weeks.length * STEP + PAD_L;
-  const svgH  = 7 * STEP + PAD_T;
 
   const COLORS = ['#2D2D2D', '#0E4429', '#006D32', '#26A641', '#39D353'];
-  const DAY_LABELS = ['Sun', '', 'Tue', '', 'Thu', '', 'Sat'];
 
   // ── Badge info ────────────────────────────────────────────────────────────
   const badgeCount   = badges?.badgesCount ?? 0;
@@ -222,32 +217,28 @@ const LeetCodeStats = () => {
           </div>
 
           <div ref={heatRef} className="overflow-x-auto pb-1">
-            <svg width={svgW} height={svgH} style={{ display: 'block' }}>
+            <svg width={weeks.length * STEP} height={7 * STEP + 18} style={{ display: 'block' }}>
 
-              {/* Month labels */}
-              {monthLabels.map(({ label, col }, i) => (
-                <text key={i} x={col * STEP + PAD_L} y={PAD_T - 5}
-                  fontSize={10} fill="#6B7280" fontFamily="monospace">{label}</text>
-              ))}
-
-              {/* Day-of-week labels */}
-              {DAY_LABELS.map((lbl, row) => lbl ? (
-                <text key={row} x={0} y={PAD_T + row * STEP + CELL}
-                  fontSize={9} fill="#6B7280" fontFamily="monospace">{lbl}</text>
-              ) : null)}
-
-              {/* Cells */}
+              {/* Cells — no day labels, no left padding */}
               {weeks.map((week, col) =>
                 week.map((cell, row) => (
                   <rect key={`${col}-${row}`}
-                    x={col * STEP + PAD_L}
-                    y={PAD_T + row * STEP}
+                    x={col * STEP}
+                    y={row * STEP}
                     width={CELL} height={CELL} rx={2} ry={2}
                     fill={cell.future ? 'transparent' : COLORS[cell.level]}>
                     <title>{cell.key}: {cell.count} submissions</title>
                   </rect>
                 ))
               )}
+
+              {/* Month labels at BOTTOM — exactly like real LeetCode */}
+              {monthLabels.map(({ label, col }, i) => (
+                <text key={i}
+                  x={col * STEP}
+                  y={7 * STEP + 14}
+                  fontSize={10} fill="#6B7280" fontFamily="monospace">{label}</text>
+              ))}
             </svg>
           </div>
 
