@@ -5,8 +5,8 @@ const LeetCodeStats = () => {
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    // Switch to Alfa Leetcode API for reliable real-time data
-    fetch('https://alfa-leetcode-api.onrender.com/userProfile/TanujCode')
+    // Switch to a fast Vercel Leetcode API to avoid cold starts
+    fetch('https://leetcode-api-faisalshohag.vercel.app/TanujCode')
       .then(res => res.json())
       .then(data => {
         if (data && data.totalSolved !== undefined) {
