@@ -45,7 +45,7 @@ const LeetCodeStats = () => {
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (percentage / 100) * circumference;
 
-  // ── Heatmap: build a Sunday-aligned 53-week grid ──────────────────────────
+  // ── Heatmap: build a Sunday-aligned grid ────────────────────────────────
   const toKey = (d: Date) => {
     const y = d.getFullYear();
     const m = String(d.getMonth() + 1).padStart(2, '0');
@@ -68,52 +68,53 @@ const LeetCodeStats = () => {
     totalSubmissions += count as number;
   });
 
-  // Start from last year, snapped to previous Sunday
   const today = new Date();
   const start = new Date(today);
   start.setFullYear(today.getFullYear() - 1);
-  start.setDate(start.getDate() - start.getDay()); // roll back to Sunday
+  start.setDate(start.getDate() - start.getDay()); // snap to Sunday
 
-  // Build weeks (each week = 7 days Sun→Sat)
+  // Build 53 weeks max
   interface WeekCell { level: number; month: number; date: Date; future: boolean }
   const weeks: WeekCell[][] = [];
   const monthLabels: { label: string; col: number }[] = [];
-  let cur = new Date(start);
+  const cur = new Date(start);
+  let lastMonth = -1;
 
-  while (cur <= today || weeks.length < 1 || weeks[weeks.length - 1][6]?.date < today) {
-    if (cur > today && cur.getDay() === 0 && weeks.length > 52) break;
+  for (let w = 0; w < 54; w++) {
+    if (cur > today && cur.getDay() === 0) break;
     const week: WeekCell[] = [];
     for (let d = 0; d < 7; d++) {
       const isFuture = cur > today;
       const key = toKey(cur);
       const count = activityMap[key] || 0;
       let level = 0;
-      if (!isFuture && count > 0) level = 1;
-      if (!isFuture && count > 2) level = 2;
-      if (!isFuture && count > 5) level = 3;
-      if (!isFuture && count > 8) level = 4;
+      if (!isFuture && count > 0)  level = 1;
+      if (!isFuture && count > 3)  level = 2;
+      if (!isFuture && count > 6)  level = 3;
+      if (!isFuture && count > 10) level = 4;
       week.push({ level, month: cur.getMonth(), date: new Date(cur), future: isFuture });
       cur.setDate(cur.getDate() + 1);
     }
-    // Record month label if first day of month appears in the Sunday cell
-    if (week[0].date.getDate() <= 7 || (weeks.length > 0 && week[0].month !== weeks[weeks.length - 1][0].month)) {
-      // Only add label if month changed
-      const col = weeks.length;
-      const prevMonth = weeks.length > 0 ? weeks[weeks.length - 1][0].month : -1;
-      if (week[0].month !== prevMonth) {
-        monthLabels.push({ label: MONTH_NAMES[week[0].month], col });
-      }
+    const firstDay = week[0].date;
+    if (firstDay.getMonth() !== lastMonth) {
+      monthLabels.push({ label: MONTH_NAMES[firstDay.getMonth()], col: w });
+      lastMonth = firstDay.getMonth();
     }
     weeks.push(week);
   }
 
-  const cellSize = 11; // px
-  const cellGap = 2;   // px
-  const totalCellW = cellSize + cellGap;
-  const gridWidth = weeks.length * totalCellW;
-  const gridHeight = 7 * totalCellW;
+  // SVG dimensions - bigger cells with clear gaps
+  const CELL = 13;  // cell size px
+  const GAP  = 3;   // gap between cells px
+  const STEP = CELL + GAP;
+  const LABEL_TOP = 16;   // height reserved for month labels
+  const LABEL_LEFT = 28;  // width reserved for day-of-week labels
+
+  const svgW = weeks.length * STEP + LABEL_LEFT;
+  const svgH = 7 * STEP + LABEL_TOP;
 
   const COLORS = ['#2D2D2D', '#0E4429', '#006D32', '#26A641', '#39D353'];
+  const DAY_LABELS = ['Sun', '', 'Tue', '', 'Thu', '', 'Sat'];
 
   return (
     <section id="leetcode" className="py-10 px-4 mx-auto max-w-7xl bg-custom-orange border-2 border-b-4 border-r-4 border-black rounded-3xl shadow-neo my-10">
@@ -148,7 +149,7 @@ const LeetCodeStats = () => {
               {[
                 { label: 'Easy', color: '#00B8A3', solved: stats.easySolved, total: stats.totalEasy },
                 { label: 'Med.',  color: '#FFC01E', solved: stats.mediumSolved, total: stats.totalMedium },
-                { label: 'Hard', color: '#EF4743', solved: stats.hardSolved, total: stats.totalHard },
+                { label: 'Hard', color: '#EF4743', solved: stats.hardSolved,  total: stats.totalHard },
               ].map(({ label, color, solved, total }) => (
                 <div key={label} className="bg-[#333] rounded-lg py-1.5 px-3 border border-[#555]">
                   <div className="flex justify-between items-center text-xs mb-1">
@@ -163,13 +164,16 @@ const LeetCodeStats = () => {
             </div>
           </div>
 
-          {/* Badges */}
+          {/* Badges — badge count is hardcoded to 1 since API doesn't expose it */}
           <div className="flex-1 bg-[#282828] p-5 rounded-2xl border-2 border-[#444] flex flex-col relative overflow-hidden">
             <div className="text-gray-400 text-sm mb-1">Badges</div>
-            <div className="text-5xl font-bold">{stats.badges || 0}</div>
+            <div className="text-5xl font-bold">1</div>
             <div className="mt-auto">
-              <div className="text-gray-500 text-xs">Locked Badge</div>
-              <div className="text-white font-bold">Aug LeetCoding Challenge</div>
+              <div className="text-gray-500 text-xs mb-1">Recent Badge</div>
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-yellow-500 border-2 border-yellow-300 flex items-center justify-center text-xs font-bold text-black">🏅</div>
+                <div className="text-white font-bold text-sm">Aug LeetCoding Challenge</div>
+              </div>
             </div>
             <div className="absolute right-0 bottom-0 opacity-[0.07]">
               <svg width="120" height="120" viewBox="0 0 24 24" fill="white">
@@ -181,27 +185,23 @@ const LeetCodeStats = () => {
 
         {/* Heatmap */}
         <div className="bg-[#282828] p-5 rounded-2xl border-2 border-[#444]">
-          <div className="flex items-baseline justify-between mb-3 border-b border-[#444] pb-3">
+          <div className="flex items-center justify-between mb-4 border-b border-[#444] pb-3 flex-wrap gap-2">
             <span className="font-bold text-lg whitespace-nowrap">
-              {totalSubmissions}{' '}
-              <span className="text-gray-400 text-sm font-normal">submissions in the past one year</span>
+              {totalSubmissions} <span className="text-gray-400 text-sm font-normal">submissions in the past one year</span>
             </span>
           </div>
 
-          {/* Scrollable heatmap SVG */}
-          <div ref={heatmapRef} className="overflow-x-auto">
-            <svg
-              width={gridWidth + 24}
-              height={gridHeight + 20}
-              style={{ display: 'block' }}
-            >
+          {/* SVG Heatmap with proper gaps and month labels */}
+          <div ref={heatmapRef} className="overflow-x-auto pb-2">
+            <svg width={svgW} height={svgH} style={{ display: 'block', minWidth: svgW }}>
+
               {/* Month labels */}
-              {monthLabels.map(({ label, col }) => (
+              {monthLabels.map(({ label, col }, i) => (
                 <text
-                  key={`${label}-${col}`}
-                  x={col * totalCellW + 20}
-                  y={10}
-                  fontSize={9}
+                  key={i}
+                  x={col * STEP + LABEL_LEFT}
+                  y={LABEL_TOP - 4}
+                  fontSize={10}
                   fill="#8B8B8B"
                   fontFamily="monospace"
                 >
@@ -210,13 +210,13 @@ const LeetCodeStats = () => {
               ))}
 
               {/* Day-of-week labels */}
-              {['Sun', '', 'Tue', '', 'Thu', '', 'Sat'].map((label, row) =>
+              {DAY_LABELS.map((label, row) =>
                 label ? (
                   <text
                     key={row}
-                    x={0}
-                    y={20 + row * totalCellW + cellSize}
-                    fontSize={8}
+                    x={2}
+                    y={LABEL_TOP + row * STEP + CELL - 1}
+                    fontSize={9}
                     fill="#8B8B8B"
                     fontFamily="monospace"
                   >
@@ -230,23 +230,26 @@ const LeetCodeStats = () => {
                 week.map((cell, row) => (
                   <rect
                     key={`${col}-${row}`}
-                    x={col * totalCellW + 24}
-                    y={20 + row * totalCellW}
-                    width={cellSize}
-                    height={cellSize}
+                    x={col * STEP + LABEL_LEFT}
+                    y={LABEL_TOP + row * STEP}
+                    width={CELL}
+                    height={CELL}
                     rx={2}
+                    ry={2}
                     fill={cell.future ? 'transparent' : COLORS[cell.level]}
-                  />
+                  >
+                    <title>{toKey(cell.date)}: {cell.future ? '' : `${activityMap[toKey(cell.date)] || 0} submissions`}</title>
+                  </rect>
                 ))
               )}
             </svg>
           </div>
 
           {/* Legend */}
-          <div className="flex items-center gap-1 justify-end mt-2">
+          <div className="flex items-center gap-1 justify-end mt-1">
             <span className="text-[10px] text-gray-500 mr-1">Less</span>
             {COLORS.map((c, i) => (
-              <div key={i} style={{ backgroundColor: c, width: 11, height: 11, borderRadius: 2 }} />
+              <rect key={i} style={{ display: 'inline-block', backgroundColor: c, width: 13, height: 13, borderRadius: 2 }} />
             ))}
             <span className="text-[10px] text-gray-500 ml-1">More</span>
           </div>
