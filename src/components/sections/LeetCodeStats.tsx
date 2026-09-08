@@ -111,8 +111,8 @@ const LeetCodeStats = () => {
     weeks.push(week);
   }
 
-  const CELL   = 13;
-  const GAP    = 3;
+  const CELL   = 10;
+  const GAP    = 2;
   const STEP   = CELL + GAP;
   const COLORS = ['#2D2D2D', '#0E4429', '#006D32', '#26A641', '#39D353'];
 
@@ -260,7 +260,7 @@ const LeetCodeStats = () => {
           <div className="flex items-center gap-1 justify-end mt-2">
             <span className="text-[10px] text-gray-500 mr-1">Less</span>
             {COLORS.map((c, i) => (
-              <div key={i} style={{ width: CELL, height: CELL, backgroundColor: c, borderRadius: 2, flexShrink: 0 }} />
+              <div key={i} style={{ width: 10, height: 10, backgroundColor: c, borderRadius: 2, flexShrink: 0 }} />
             ))}
             <span className="text-[10px] text-gray-500 ml-1">More</span>
           </div>
