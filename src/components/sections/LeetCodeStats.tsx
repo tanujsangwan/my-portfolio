@@ -47,31 +47,52 @@ const LeetCodeStats = () => {
 
   // Real Heatmap Processing
   const calendar = typeof stats.submissionCalendar === 'string' ? JSON.parse(stats.submissionCalendar) : stats.submissionCalendar;
+  
+  const getLocalYYYYMMDD = (d: Date) => {
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   const activityMap: Record<string, number> = {};
   let totalSubmissions = 0;
   
   if (calendar) {
       Object.entries(calendar).forEach(([timestamp, count]: [string, any]) => {
           const date = new Date(parseInt(timestamp) * 1000);
-          const dateString = date.toISOString().split('T')[0];
+          const dateString = getLocalYYYYMMDD(date);
           activityMap[dateString] = (activityMap[dateString] || 0) + count;
           totalSubmissions += count;
       });
   }
 
   const weeks = [];
-  for (let i = 51; i >= 0; i--) {
+  const today = new Date();
+  let startDate = new Date(today);
+  startDate.setDate(today.getDate() - 365);
+  // Roll back to the nearest Sunday to align the grid
+  startDate.setDate(startDate.getDate() - startDate.getDay());
+
+  let currentDay = new Date(startDate);
+  while (currentDay <= today || currentDay.getDay() !== 0) {
+      if (currentDay > today && currentDay.getDay() === 0) break;
+      
       const week = [];
       for (let j = 0; j < 7; j++) {
-          const d = new Date();
-          d.setDate(d.getDate() - (i * 7 + (6 - j)));
-          const dateString = d.toISOString().split('T')[0];
-          const count = activityMap[dateString] || 0;
-          let level = 0;
-          if (count > 0) level = 1;
-          if (count > 2) level = 2;
-          if (count > 4) level = 3;
-          week.push(level);
+          if (currentDay > today) {
+              week.push(-1);
+          } else {
+              const dateString = getLocalYYYYMMDD(currentDay);
+              const count = activityMap[dateString] || 0;
+              let level = 0;
+              if (count > 0) level = 1;
+              if (count > 2) level = 2;
+              if (count > 4) level = 3;
+              if (count > 6) level = 4;
+              week.push(level);
+          }
+          currentDay.setDate(currentDay.getDate() + 1);
       }
       weeks.push(week);
   }
@@ -148,11 +169,15 @@ const LeetCodeStats = () => {
             <div className="flex gap-1 overflow-x-auto pb-4 custom-scrollbar">
                 {weeks.map((week, i) => (
                     <div key={i} className="flex flex-col gap-1">
-                        {week.map((day, j) => (
-                            <div 
-                                key={j} 
-                                className={`w-3 h-3 rounded-sm ${day === 0 ? 'bg-[#333]' : day === 1 ? 'bg-[#0E4429]' : day === 2 ? 'bg-[#006D32]' : 'bg-[#26A641]'}`}
-                            ></div>
+                        {week.map((level, j) => (
+                            level === -1 ? (
+                                <div key={j} className="w-3 h-3 rounded-sm bg-transparent"></div>
+                            ) : (
+                                <div 
+                                    key={j} 
+                                    className={`w-3 h-3 rounded-sm ${level === 0 ? 'bg-[#333]' : level === 1 ? 'bg-[#0E4429]' : level === 2 ? 'bg-[#006D32]' : level === 3 ? 'bg-[#26A641]' : 'bg-[#39D353]'}`}
+                                ></div>
+                            )
                         ))}
                     </div>
                 ))}
