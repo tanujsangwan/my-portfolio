@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Taskbar from './components/layout/Taskbar';
 import Hero from './components/sections/Hero';
 import Skills from './components/sections/Skills';

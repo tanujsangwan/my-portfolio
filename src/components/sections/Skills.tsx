@@ -1,4 +1,3 @@
-import React from 'react';
 
 const SkillCategory = ({ title, skills, color }: { title: string, skills: string[], color: string }) => (
   <div className={`bg-white border-4 border-black p-5 rounded-2xl shadow-neo hover:translate-x-1 hover:translate-y-1 hover:shadow-none transition-all relative overflow-hidden`}>

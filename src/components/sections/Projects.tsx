@@ -1,4 +1,3 @@
-import React from 'react';
 import { FaExternalLinkAlt } from 'react-icons/fa';
 
 const ProjectCard = ({ title, tools, description, link, color, live }: any) => (

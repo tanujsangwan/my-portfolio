@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { FaGithub, FaLinkedin, FaCode, FaDownload, FaEnvelope, FaExclamationTriangle } from 'react-icons/fa';
 import ContactModal from '../ui/ContactModal';
 import MiniTerminal from '../ui/MiniTerminal';
@@ -50,9 +50,7 @@ const Hero = () => {
             <FaDownload /> DOWNLOAD_RESUME
           </button>
           <a 
-            href="https://mail.google.com/mail/?view=cm&fs=1&to=tanujsangwan1770@gmail.com"
-            target="_blank"
-            rel="noreferrer"
+            href="mailto:tanujsangwan1770@gmail.com"
             className="bg-custom-red text-white w-full py-3 rounded-xl border-2 border-black font-bold shadow-neo-sm hover:translate-y-1 hover:shadow-none transition-all flex items-center justify-center gap-2 cursor-pointer"
           >
             <FaEnvelope /> CONTACT ME

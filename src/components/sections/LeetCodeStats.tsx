@@ -1,14 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const LeetCodeStats = () => {
   const [stats, setStats] = useState<any>(null);
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    fetch('https://leetcode-stats-api.herokuapp.com/TanujCode')
+    // Switch to Alfa Leetcode API for reliable real-time data
+    fetch('https://alfa-leetcode-api.onrender.com/userProfile/TanujCode')
       .then(res => res.json())
       .then(data => {
-        if (data.status === 'success') {
+        if (data && data.totalSolved !== undefined) {
           setStats(data);
         } else {
           setError(true);
