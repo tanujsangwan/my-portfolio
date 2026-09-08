@@ -13,12 +13,9 @@ const Hero = () => {
       {/* Left Column - Profile Card */}
       <div className="w-full md:w-1/3 bg-white border-2 border-b-4 border-r-4 border-black rounded-3xl p-6 shadow-neo flex flex-col items-center text-center relative overflow-hidden">
         
-        {/* Tape decoration */}
-        <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-gray-200/50 w-20 h-6 rotate-[-5deg] border border-gray-400"></div>
-
-        {/* Profile Image / Initial Placeholder */}
-        <div className="w-32 h-32 bg-custom-sky rounded-full border-4 border-black mb-4 flex items-center justify-center overflow-hidden">
-          <img src="/profile.jpg" alt="Tanuj Sangwan" className="w-full h-full object-cover" />
+        {/* Profile Image */}
+        <div className="w-40 h-40 bg-custom-sky rounded-full border-4 border-black mb-4 flex items-center justify-center overflow-hidden shadow-neo-sm">
+          <img src="/profile.jpg" alt="Tanuj Sangwan" className="w-full h-full object-cover scale-[1.4] origin-[50%_20%]" />
         </div>
 
         <h1 className="text-4xl font-shrikhand mb-1">TANUJ</h1>
