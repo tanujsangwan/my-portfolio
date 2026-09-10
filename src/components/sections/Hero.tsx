@@ -1,11 +1,10 @@
 import { useState } from 'react';
-import { FaGithub, FaLinkedin, FaCode, FaDownload, FaEnvelope, FaExclamationTriangle } from 'react-icons/fa';
+import { FaGithub, FaLinkedin, FaCode, FaDownload, FaEnvelope } from 'react-icons/fa';
 import ContactModal from '../ui/ContactModal';
 import MiniTerminal from '../ui/MiniTerminal';
 
 const Hero = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isResumeModalOpen, setIsResumeModalOpen] = useState(false);
 
   return (
     <section className="pt-4 pb-10 px-4 max-w-7xl mx-auto flex flex-col md:flex-row gap-8 items-start justify-center">
@@ -40,12 +39,14 @@ const Hero = () => {
 
         {/* Buttons */}
         <div className="w-full flex flex-col gap-3 mt-6">
-          <button 
-            onClick={() => setIsResumeModalOpen(true)}
+          <a 
+            href="https://drive.google.com/uc?export=download&id=1IgK16BSqymBVJjlcFajJTotbSDjW04DI"
+            target="_blank"
+            rel="noreferrer"
             className="bg-custom-green w-full py-3 rounded-xl border-2 border-black font-bold shadow-neo-sm hover:translate-y-1 hover:shadow-none transition-all flex items-center justify-center gap-2 cursor-pointer"
           >
             <FaDownload /> DOWNLOAD_RESUME
-          </button>
+          </a>
           <a 
             href="mailto:tanujsangwan1770@gmail.com"
             className="bg-custom-red text-white w-full py-3 rounded-xl border-2 border-black font-bold shadow-neo-sm hover:translate-y-1 hover:shadow-none transition-all flex items-center justify-center gap-2 cursor-pointer"
@@ -85,26 +86,6 @@ const Hero = () => {
 
       <ContactModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
 
-      {/* Fake Resume Modal */}
-      {isResumeModalOpen && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[70] p-4">
-          <div className="bg-white w-full max-w-sm border-4 border-black rounded-3xl p-8 shadow-neo relative animate-bounce-in text-center flex flex-col items-center">
-            <div className="text-7xl text-custom-yellow mb-6 drop-shadow-[4px_4px_0_rgba(0,0,0,1)]">
-              <FaExclamationTriangle />
-            </div>
-            <h2 className="text-3xl font-shrikhand mb-4 uppercase">Coming Soon</h2>
-            <p className="font-bold text-lg border-2 border-black p-4 bg-gray-100 rounded-xl leading-snug">
-              Resume is currently being updated! Check back later.
-            </p>
-            <button 
-              onClick={() => setIsResumeModalOpen(false)}
-              className="mt-8 w-full bg-custom-red text-white font-bold py-3 border-4 border-black rounded-xl shadow-[4px_4px_0_rgba(0,0,0,1)] hover:shadow-none hover:translate-y-1 transition-all cursor-pointer uppercase tracking-wider"
-            >
-              UNDERSTAND
-            </button>
-          </div>
-        </div>
-      )}
     </section>
   );
 };
