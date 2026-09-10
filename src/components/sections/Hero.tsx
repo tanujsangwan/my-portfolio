@@ -57,7 +57,7 @@ const Hero = () => {
 
         {/* Social Links */}
         <div className="flex gap-4 mt-6 text-2xl flex-wrap justify-center">
-          <a href="mailto:tanujsangwan1770@gmail.com" className="hover:scale-110 transition-transform text-red-500"><FaEnvelope /></a>
+          <button onClick={() => { window.location.href = 'mailto:tanujsangwan1770@gmail.com'; }} className="hover:scale-110 transition-transform text-red-500 cursor-pointer bg-transparent border-none"><FaEnvelope /></button>
           <a href="https://github.com/tanujsangwan" target="_blank" rel="noreferrer" className="hover:scale-110 transition-transform"><FaGithub /></a>
           <a href="https://www.linkedin.com/in/tanuj-sangwan-3801bb32a/" target="_blank" rel="noreferrer" className="hover:scale-110 transition-transform text-blue-700"><FaLinkedin /></a>
           <a href="https://leetcode.com/u/TanujCode/" target="_blank" rel="noreferrer" className="hover:scale-110 transition-transform text-orange-600"><FaCode /></a>

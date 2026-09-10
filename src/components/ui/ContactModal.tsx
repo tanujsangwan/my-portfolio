@@ -20,9 +20,12 @@ const ContactModal: React.FC<ContactModalProps> = ({ isOpen, onClose }) => {
         </div>
 
         <div className="flex flex-col gap-4 font-bold">
-            <a href="mailto:tanujsangwan1770@gmail.com" className="flex items-center gap-3 p-3 bg-custom-yellow border-2 border-black rounded-xl hover:translate-x-1 hover:shadow-neo-sm transition-all">
-                <FaEnvelope className="text-xl"/> tanujsangwan1770@gmail.com
-            </a>
+            <button 
+              onClick={() => { window.location.href = 'mailto:tanujsangwan1770@gmail.com'; }}
+              className="flex items-center gap-3 p-3 bg-custom-yellow border-2 border-black rounded-xl hover:translate-x-1 hover:shadow-neo-sm transition-all w-full text-left cursor-pointer"
+            >
+                <FaEnvelope className="text-xl flex-shrink-0"/> tanujsangwan1770@gmail.com
+            </button>
             <a href="https://github.com/tanujsangwan" target="_blank" rel="noreferrer" className="flex items-center gap-3 p-3 bg-gray-200 border-2 border-black rounded-xl hover:translate-x-1 hover:shadow-neo-sm transition-all">
                 <FaGithub className="text-xl"/> GitHub
             </a>
