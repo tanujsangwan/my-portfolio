@@ -53,8 +53,11 @@ const Taskbar = () => {
           visible ? 'top-4 translate-y-0' : '-top-24 -translate-y-full'
         }`}
       >
-        <div className="text-xl md:text-2xl font-shrikhand text-white drop-shadow-[2px_2px_0_rgba(0,0,0,1)] ml-2">
-          PORTFOLIO
+        <div className="flex items-center gap-3 ml-1">
+          <img src="/logo.jpg" alt="TS Logo" className="w-9 h-9 rounded-full border-2 border-black object-cover shadow-neo-sm" />
+          <div className="text-xl md:text-2xl font-shrikhand text-white drop-shadow-[2px_2px_0_rgba(0,0,0,1)]">
+            PORTFOLIO
+          </div>
         </div>
 
         <div className="hidden lg:flex gap-3 font-bold text-sm items-center">
